@@ -29,8 +29,8 @@ public class ProfileService {
     private final AuthenticationManager authenticationManager;
     private  final JWTUtil jwtUtil;
 
-//    @Value("${app.activation.url}")
-//    private String activationURL;
+    @Value("${app.activation.url}")
+    private String activationURL;
 
    
     public ProfileDTO registerProfile(ProfileDTO profileDTO) {
@@ -38,7 +38,7 @@ public class ProfileService {
         newProfile.setActivationToken(UUID.randomUUID().toString());
         newProfile = profileRepository.save(newProfile);
 
-        String activationLink = "http://localhost:8080/casho/activate?token=" + newProfile.getActivationToken();
+        String activationLink = activationURL+"/casho/activate?token=" + newProfile.getActivationToken();
         String subject = "Activate your money manager account";
         String body = "Click on the following link to acitvate your account:" + activationLink;
         emailService.sendEmail(newProfile.getEmail(), subject, body);
