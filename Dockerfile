@@ -1,13 +1,14 @@
-# FROM eclipse-temurin:21-jre
-# WORKDIR /app
-# COPY target/moneymanager-0.0.1-SNAPSHOT.jar moneymanager-v1.0.jar
-# EXPOSE 9090
-# ENTRYPOINT ["java", "-jar", "moneymanager-v1.0.jar"]
+# Stage 1: Build the JAR with JDK
+FROM eclipse-temurin:21-jdk as builder
+WORKDIR /workspace
+COPY . .
+# Build the JAR (Maven wrapper must be in your repo)
+RUN ./mvnw clean package
 
-
+# Stage 2: Run the JAR with JRE only
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-# Copy the specific JAR file name we saw in your logs
-COPY target/moneymanager-0.0.1-SNAPSHOT.jar app.jar
+# Copy the JAR from the builder stage
+COPY --from=builder /workspace/target/moneymanager-*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
